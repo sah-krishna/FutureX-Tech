@@ -12,6 +12,7 @@ import OurServices from '@/app/components/OurServices';
 import ImageGallery from "@/app/components/ImageGallery";
 import FAQ from "@/app/components/FAQ";
 import Reviews from '@/app/components/Reviews';
+import BookAppointment from '@/app/components/BookAppointment';
 
 // Project data
 const projects = [
@@ -459,7 +460,7 @@ export default function Home() {
 <div className="hr"></div>
 
 {/* FAQ Section */}
-<section className="py-20">
+<section id="faq" className="py-20">
   <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-16 lg:px-24">
     <div className="text-center mb-16">
       <SectionHeader title="FAQ" />
@@ -477,26 +478,8 @@ export default function Home() {
 <div className="hr"></div>
 
 {/* Book Appointment Section */}
-<section className="py-20">
-  <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-16 lg:px-24">
-    <div className="text-center">
-      <SectionHeader title="Book an Appointment" />
-      <h2 className="text-5xl md:text-6xl lg:text-7xl font-medium leading-tight mt-8">
-        <span className="text-white">Ready to Get Started?</span>
-        <br />
-        <span className="text-gray-500">Let's Talk About Your Project.</span>
-      </h2>
-      <p className="text-gray-400 text-lg max-w-2xl mx-auto mt-6">
-        Schedule a free consultation to discuss your needs and how we can help bring your vision to life.
-      </p>
-      <div className="mt-10">
-        <Button href="/contact" className="bg-blue-600 text-white">
-          Book a 15-min call
-        </Button>
-      </div>
-    </div>
-  </div>
-</section>
+<BookAppointment />
+
 {/* hr line */}
 <div className="hr"></div>
 

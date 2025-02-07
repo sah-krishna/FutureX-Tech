@@ -5,6 +5,8 @@ import AwardCard from '@/app/components/AwardCard';
 import ToolCard from '@/app/components/ToolCard';
 import SectionHeader from '@/app/components/ui/SectionHeader';
 import Button from '@/app/components/ui/Button';
+import BookAppointment from '../components/BookAppointment';
+import FAQ from '../components/FAQ';
 
 export default function AboutPage() {
   return (
@@ -228,6 +230,25 @@ export default function AboutPage() {
       </section>
       {/* hr line */}
       <div className="hr"></div>
+      <section id="faq" className="py-20">
+        <div className="max-w-7xl mx-auto px-6 sm:px-12 md:px-16 lg:px-24">
+          <div className="text-center mb-16">
+            <SectionHeader title="FAQ" />
+            <h2 className="text-4xl md:text-5xl font-medium mt-8">
+              <span className="text-white">Frequently Asked Questions</span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto mt-4">
+              Find answers to common questions about our services and process.
+            </p>
+          </div>
+          <FAQ />
+        </div>
+      </section>
+      {/* hr line */}
+      <div className="hr"></div>
+      <BookAppointment/>
+      {/* hr line */}
+      
     </>
   );
 }

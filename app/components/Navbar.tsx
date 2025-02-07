@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useScrollDirection } from '@/app/hooks/useScrollDirection';
 import { navigationLinks } from '@/app/lib/navigation';
 
@@ -10,15 +10,41 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const isScrollingDown = useScrollDirection();
   const pathname = usePathname();
+  const router = useRouter();
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
+  const handleNavClick = (href: string) => {
+    // Check if the href is for FAQ
+    if (href === '/faq') {
+      // If we're already on a page with FAQ section
+      const faqSection = document.getElementById('faq');
+      if (faqSection) {
+        const offset = 80; // Height of the fixed navbar
+        const elementPosition = faqSection.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+        setIsOpen(false); // Close mobile menu if open
+        return;
+      }
+      // If we're not on a page with FAQ, navigate to dedicated FAQ page
+      router.push(href);
+      return;
+    }
+    // For other links, just navigate normally
+    router.push(href);
+  };
+
   return (
     <nav 
-      className={`fixed z-50 w-full border-b border-white/10 bg-black/50 backdrop-blur-xl
+      className={`fixed z-50 w-full border-b border-white/30 bg-black/50 backdrop-blur-xl
         transition-transform duration-300 ease-in-out
         ${isScrollingDown ? '-translate-y-full' : 'translate-y-0'}
       `}
@@ -40,23 +66,23 @@ export default function Navbar() {
           {/* Center: Navigation Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navigationLinks.map((link) => (
-              <Link
+              <button
                 key={link.href}
-                href={link.href}
-                className={`relative py-2 group ${
+                onClick={() => handleNavClick(link.href)}
+                className={`relative group ${
                   pathname === link.href 
                     ? 'text-blue-400' 
                     : 'text-gray-400 hover:text-white'
                 } transition-colors duration-300`}
               >
                 {link.name}
-                {/* Active/Hover Indicator Line */}
+                {/* Active Indicator */}
                 <span 
                   className={`absolute -bottom-1 left-0 w-full h-0.5 bg-blue-500 transform origin-left transition-transform duration-300 ${
                     pathname === link.href ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   }`} 
                 />
-              </Link>
+              </button>
             ))}
           </div>
 
@@ -106,17 +132,17 @@ export default function Navbar() {
       >
         <div className="px-6 py-4 space-y-2">
           {navigationLinks.map((link) => (
-            <Link
+            <button
               key={link.href}
-              href={link.href}
-              className={`block py-2 px-4 rounded-lg ${
+              onClick={() => handleNavClick(link.href)}
+              className={`block w-full text-left py-2 px-4 rounded-lg ${
                 pathname === link.href 
                   ? 'bg-blue-500/10 text-blue-400' 
                   : 'text-gray-400 hover:bg-white/5 hover:text-white'
               } transition-colors duration-300`}
             >
               {link.name}
-            </Link>
+            </button>
           ))}
           {/* Mobile Connect Button */}
           <Link 
