@@ -1,102 +1,124 @@
 'use client'
 
 import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import DatePicker from 'react-datepicker'
-import "react-datepicker/dist/react-datepicker.css"
+import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { FaCheck } from 'react-icons/fa'
+import BookingLayout from './components/BookingLayout'
 
-export default function BookingPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
-  const [selectedTime, setSelectedTime] = useState<string>('')
-  const supabase = createClientComponentClient()
+const plans = [
+  {
+    name: 'Free Plan',
+    price: '$0',
+    description: 'Basic consultation with standard scheduling',
+    features: [
+      'Video consultation',
+      'Basic assessment',
+      'Standard scheduling (2-3 weeks)',
+      'Email support',
+    ],
+    buttonText: 'Choose Free Plan',
+    type: 'free'
+  },
+  {
+    name: 'Premium Plan',
+    price: '$99',
+    description: 'Priority consultation with premium benefits',
+    features: [
+      'Priority video consultation',
+      'Comprehensive assessment',
+      'Priority scheduling (within 1 week)',
+      'Direct phone support',
+      'Follow-up session',
+      'Detailed written report',
+      '24/7 emergency support'
+    ],
+    buttonText: 'Choose Premium Plan',
+    type: 'premium',
+    highlighted: true
+  }
+]
 
-  // Available time slots (you can modify these)
-  const timeSlots = [
-    '09:00', '10:00', '11:00', '12:00', 
-    '14:00', '15:00', '16:00', '17:00'
-  ]
+export default function BookingPlans() {
+  const router = useRouter()
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!selectedDate || !selectedTime) {
-      alert('Please select both date and time')
-      return
-    }
-
-    try {
-      // Combine date and time
-      const appointmentDateTime = new Date(selectedDate)
-      const [hours, minutes] = selectedTime.split(':')
-      appointmentDateTime.setHours(parseInt(hours), parseInt(minutes))
-
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([
-          {
-            appointment_date: appointmentDateTime.toISOString(),
-            status: 'pending',
-            // Add any other fields you need
-          }
-        ])
-        .select()
-
-      if (error) throw error
-
-      alert('Appointment booked successfully!')
-      setSelectedDate(null)
-      setSelectedTime('')
-      
-    } catch (error) {
-      console.error('Error booking appointment:', error)
-      alert('Failed to book appointment')
-    }
+  const handlePlanSelection = (planType: string) => {
+    setSelectedPlan(planType)
+    router.push(`/booking/details?plan=${planType}`)
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6">Book an Appointment</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Date
-          </label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            minDate={new Date()}
-            className="w-full p-2 border rounded-md"
-            dateFormat="MMMM d, yyyy"
-            placeholderText="Select a date"
-          />
+    <BookingLayout>
+      <div className="space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">
+            Choose Your Consultation Plan
+          </h1>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Select the plan that best suits your needs. Our premium plan offers priority scheduling and additional benefits.
+          </p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Time
-          </label>
-          <select
-            value={selectedTime}
-            onChange={(e) => setSelectedTime(e.target.value)}
-            className="w-full p-2 border rounded-md"
-          >
-            <option value="">Select a time</option>
-            {timeSlots.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="grid md:grid-cols-2 gap-8 mt-12">
+          {plans.map((plan) => (
+            <motion.div
+              key={plan.type}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.02 }}
+              className={`
+                relative p-8 rounded-xl
+                ${plan.highlighted 
+                  ? 'bg-gradient-to-b from-blue-600 to-blue-700 shadow-xl' 
+                  : 'bg-gray-800'
+                }
+              `}
+            >
+              {plan.highlighted && (
+                <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+                  <span className="bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded-full">
+                    RECOMMENDED
+                  </span>
+                </div>
+              )}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          Book Appointment
-        </button>
-      </form>
-    </div>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
+                  <p className="mt-2 text-gray-300">{plan.description}</p>
+                </div>
+
+                <div className="text-4xl font-bold text-white">
+                  {plan.price}
+                </div>
+
+                <ul className="space-y-4">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-center text-gray-300">
+                      <FaCheck className="text-green-400 mr-3 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handlePlanSelection(plan.type)}
+                  className={`
+                    w-full py-3 px-6 rounded-lg font-semibold transition-colors
+                    ${plan.highlighted
+                      ? 'bg-white text-blue-600 hover:bg-gray-100'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }
+                  `}
+                >
+                  {plan.buttonText}
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </BookingLayout>
   )
 } 
