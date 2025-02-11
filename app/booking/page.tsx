@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { FaCheck } from 'react-icons/fa'
-import BookingLayout from './components/BookingLayout'
+import BookingTemplate from './components/BookingTemplate'
 
 const plans = [
   {
@@ -49,76 +49,63 @@ export default function BookingPlans() {
   }
 
   return (
-    <BookingLayout>
-      <div className="space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-4">
-            Choose Your Consultation Plan
-          </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Select the plan that best suits your needs. Our premium plan offers priority scheduling and additional benefits.
-          </p>
-        </div>
+    <div className="grid md:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {plans.map((plan) => (
+        <motion.div
+          key={plan.type}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.02 }}
+          className={`
+            relative p-8 rounded-xl h-full flex flex-col
+            ${plan.highlighted 
+              ? 'bg-gradient-to-b from-blue-600 to-blue-700 shadow-xl' 
+              : 'bg-gray-800'
+            }
+          `}
+        >
+          {plan.highlighted && (
+            <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+              <span className="bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded-full">
+                RECOMMENDED
+              </span>
+            </div>
+          )}
 
-        <div className="grid md:grid-cols-2 gap-8 mt-12">
-          {plans.map((plan) => (
-            <motion.div
-              key={plan.type}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ scale: 1.02 }}
-              className={`
-                relative p-8 rounded-xl
-                ${plan.highlighted 
-                  ? 'bg-gradient-to-b from-blue-600 to-blue-700 shadow-xl' 
-                  : 'bg-gray-800'
-                }
-              `}
-            >
-              {plan.highlighted && (
-                <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
-                  <span className="bg-yellow-500 text-black text-xs font-bold px-3 py-1 rounded-full">
-                    RECOMMENDED
-                  </span>
-                </div>
-              )}
+          <div className="flex-grow space-y-6">
+            <div>
+              <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
+              <p className="mt-2 text-gray-300">{plan.description}</p>
+            </div>
 
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-white">{plan.name}</h3>
-                  <p className="mt-2 text-gray-300">{plan.description}</p>
-                </div>
+            <div className="text-4xl font-bold text-white">
+              {plan.price}
+            </div>
 
-                <div className="text-4xl font-bold text-white">
-                  {plan.price}
-                </div>
+            <ul className="space-y-4">
+              {plan.features.map((feature) => (
+                <li key={feature} className="flex items-center text-gray-300">
+                  <FaCheck className="text-green-400 mr-3 flex-shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
 
-                <ul className="space-y-4">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center text-gray-300">
-                      <FaCheck className="text-green-400 mr-3 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => handlePlanSelection(plan.type)}
-                  className={`
-                    w-full py-3 px-6 rounded-lg font-semibold transition-colors
-                    ${plan.highlighted
-                      ? 'bg-white text-blue-600 hover:bg-gray-100'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
-                    }
-                  `}
-                >
-                  {plan.buttonText}
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </BookingLayout>
+          <button
+            onClick={() => handlePlanSelection(plan.type)}
+            className={`
+              w-full py-3 px-6 rounded-lg font-semibold transition-colors mt-8
+              ${plan.highlighted
+                ? 'bg-white text-blue-600 hover:bg-gray-100'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+              }
+            `}
+          >
+            {plan.buttonText}
+          </button>
+        </motion.div>
+      ))}
+    </div>
   )
 } 
